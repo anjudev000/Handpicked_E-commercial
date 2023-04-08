@@ -50,7 +50,7 @@ const userSchema= new mongoose.Schema({
             productId : {
                 type : ObjectId
             },quantity: { type: Number, default: 1 },
-            _id : false
+            _id : false,
         }],
         wishlist : [{
             productId : {

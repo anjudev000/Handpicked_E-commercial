@@ -40,6 +40,46 @@ const checkOut = async (req, res,next) => {
 }
 
 
+const checkOutLoad = async (req, res) => {
+  try {
+    const address = await User.find({ _id: req.session.userData._id }).lean();
+    const cartData = await User.aggregate([
+      {
+        $match: { _id: new ObjectId(req.session.userData._id) },
+      },
+      {
+        $lookup: {
+          from: "products",
+          let: { cartItems: "$cart" },
+          pipeline: [
+            { $match: { $expr: { $in: ["$_id", "$$cartItems.productId"] } } },
+          ],
+          as: "Cartproducts",
+        },
+      },
+    ]);
+    let subtotal = 0;
+
+    const cartProducts = cartData[0].Cartproducts;
+    cartProducts.map((cartProduct, i) => {
+      cartProduct.quantity = quantitys[i];
+      subtotal = subtotal + cartProduct.price * quantitys[i];
+    });
+
+    res.render("users/checkout", {
+      productDetails: cartData[0].Cartproducts,
+      subtotal: subtotal,
+      address: address[0].address,
+      userData: req.session.userData._id,
+      logged: 1,
+      total: subtotal,
+      offer: 0,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 let couponamount
 
 const placeOrder = async (req, res,next) => {
@@ -213,7 +253,7 @@ const editAddressUpload = async(req,res,next)=>{
     const userAddress = await User.updateOne(
       { address: { $elemMatch: { _id: id } } }, { $set: { "address.$": req.body } });
      
-    res.redirect('/cart');
+    res.redirect('/checkout');
 }
   catch(error){
     next(error)
@@ -257,6 +297,7 @@ module.exports={
   editAddressLoad,
   editAddressUpload,
   razorPayFunction,
-  razorPayVerify 
+  razorPayVerify,
+  checkOutLoad 
 
 }

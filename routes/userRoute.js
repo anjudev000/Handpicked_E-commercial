@@ -61,7 +61,7 @@ user_route.post('/addToCart', auth.isLogin, cartController.addToCart);
 user_route.post('/cart/update/:productId',auth.isLogin,cartController.updateCartQuantity);
 user_route.delete('/removeproduct/:id',auth.isLogin, cartController.removeCartProduct);
 
-user_route.get('/checkout', auth.isLogin, checkoutController.checkOut);
+user_route.get('/checkout', auth.isLogin, checkoutController.checkOutLoad);
 user_route.post('/checkout', auth.isLogin, checkoutController.checkOut);
 user_route.get('/editCheckoutAddress',auth.isLogin,checkoutController.editAddressLoad);
 user_route.post('/editCheckoutAddress',auth.isLogin,checkoutController.editAddressUpload);

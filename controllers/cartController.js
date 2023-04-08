@@ -3,7 +3,7 @@ const User = require("../model/userSchema");
 const { ObjectId } = require('mongodb');
 
 
-const cartLoad = async (req, res,next) => {
+const cartLoad = async (req, res, next) => {
   try {
     const user = await User.findById(req.session.userData);
     const userData = req.session.userData;
@@ -33,18 +33,18 @@ const cartLoad = async (req, res,next) => {
       },
     ]);
     const cartProducts = cartData[0].productcartData;
-      
-     cartProducts.forEach((cartProduct) => {
+
+    cartProducts.forEach((cartProduct) => {
       const cartItem = user.cart.find((item) => item.productId.equals(cartProduct._id));
       cartProduct.quantity = cartItem ? cartItem.quantity : 1;
     });
-    
+
     let subtotal = 0;
     cartProducts.forEach((cartProduct) => {
       subtotal = subtotal + Number(cartProduct.price);
     });
     const length = cartProducts.length;
-    res.render("users/cart", { cartProducts, subtotal, length, userData: req.session.userData ,user});
+    res.render("users/cart", { cartProducts, subtotal, length, userData: req.session.userData, user });
   } catch (error) {
     next(error);
   }
@@ -55,14 +55,12 @@ const updateCartQuantity = async (req, res) => {
     const productId = req.params.productId;
     const newQuantity = req.body.quantity;
 
-    const user = await User.findById(req.session.userData);
-    const cartItem = user.cart.find(item => item.productId.toString() === productId.toString());
 
-    if (cartItem) {
-      cartItem.quantity = newQuantity;
-    }
-
-    await user.save();
+    const user = await User.findByIdAndUpdate(
+      req.session.userData,
+      { $set: { "cart.$[item].quantity": newQuantity } },
+      { arrayFilters: [{ "item.productId": productId }] }
+    );
 
     res.status(200).json({ success: true });
   } catch (error) {
@@ -98,6 +96,6 @@ module.exports = {
   addToCart,
   removeCartProduct,
   updateCartQuantity
-  
+
 
 }
