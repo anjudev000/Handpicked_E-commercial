@@ -9,7 +9,7 @@ const path = require('path');
 
 
 
-const productLoad = async (req, res,next) => {
+const productLoad = async (req, res, next) => {
   try {
     const productData = await Product.aggregate([
       {
@@ -33,11 +33,11 @@ const productLoad = async (req, res,next) => {
   }
 }
 
-const addProductLoad = async (req, res,next) => {
+const addProductLoad = async (req, res, next) => {
   try {
-    
+
     const categoryData = await Category.find({});
-    
+
     res.render('admin/addNewProduct', { category: categoryData });
 
   }
@@ -45,7 +45,7 @@ const addProductLoad = async (req, res,next) => {
     next(error);
   }
 }
-const productUpload = async (req, res,next) => {
+const productUpload = async (req, res, next) => {
   const images = req.files.map((file) => {
     return file.filename;
   });
@@ -84,7 +84,7 @@ const productUpload = async (req, res,next) => {
   }
 };
 
-const deleteProduct = async (req, res,next) => {
+const deleteProduct = async (req, res, next) => {
   try {
     const id = req.body.id;
     const response = await Product.findByIdAndUpdate(id, { $set: { is_deleted: true } });
@@ -93,7 +93,7 @@ const deleteProduct = async (req, res,next) => {
     next(error);
   }
 };
-const productEdit = async (req, res,next) => {
+const productEdit = async (req, res, next) => {
   try {
 
     const id = req.query.id;
@@ -111,7 +111,7 @@ const productEdit = async (req, res,next) => {
     next(error);
   }
 }
-const updateProduct = async (req, res,next) => {
+const updateProduct = async (req, res, next) => {
   const id = req.query.id;
   const product = await Product.findById(id);
   const images = req.files ? req.files.map((file) => file.filename) : [];
@@ -126,7 +126,7 @@ const updateProduct = async (req, res,next) => {
     },
   };
   if (images.length > 0) {
-    updation.$set.images = images;
+    updation.$push = { images: { $each: images } };
   }
   try {
     const result = await Product.updateOne({ _id: id }, updation);
@@ -140,20 +140,19 @@ const updateProduct = async (req, res,next) => {
   }
 };
 
-const removeImage = async (req, res,next) => {
-
-
+const removeImage = async (req, res, next) => {
   const imgName = req.params.imgName;
-  
-  const imagePath = (path.join("public", "images", imgName));
-  
+  const imagePath = path.join("public", "images", imgName);
+
   try {
-
-    await fs.promises.unlink(imagePath);
-
-    res.sendStatus(200);
-  }
-  catch (error) {
+    const result = await Product.updateOne(
+      { images: imgName }, // Filter by the image name
+      { $pull: { images: imgName } } // Use $pull to remove the image from the array
+    );
+    if (result) {
+      res.status(200).json({ success: true });
+    }
+  } catch (error) {
     next(error);
   }
 }

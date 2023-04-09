@@ -1,35 +1,34 @@
 <%- include('../layouts/admin/adminheader.ejs') -%>
 
-
-<div class="card">
-  <h5 class="card-header">Orders</h5>
-  <div class="table-responsive text-nowrap">
-      <table class="table" id="list_orderedproducts">
-          <thead>
-            <tr>
-              <th scope="col">Product name</th>
-              <th scope="col">Quantity</th>
-              <th scope="col">Price</th>
-            </tr>
-          </thead>
-          <tbody>
-           
-             <% order.forEach(function(orderItem){ %>
-              <% orderItem.product.forEach(function(productItem){ %>
-                <tr>
-                  <td> <%= productItem.name %></td>
-                  <td> <%= productItem.quantiy %></td>
-                  <td> <%= productItem.price %></td>
-                </tr>
-              <%  }) %> 
-              <%  }) %>
+       
              
+<div class="card text-center">
+  <h5 class="card-header">Orders</h5>
+  <div class="card-body">
+    <% order.forEach(function(orderItem){ %>
+    <% orderItem.product.forEach(function(productItem){ %>
+    <div class="card mb-3" style="max-width: 540px; margin: auto;">
+      <div class="row no-gutters">
+        <div class="col-md-4">
+          <!-- Retrieve the product image URL from the images array in productItem -->
+          <% const proImage = products.find(product => product._id.toString() === productItem.id.toString()); %>
+          <img src="/images/<%= proImage.images[0] %>" class="card-img" alt="Product Image">
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title"><%= productItem.name %></h5>
+            <p class="card-text">Quantity: <%= productItem.quantity %></p>
+            <p class="card-text">Price: <%= productItem.price %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <%  }) %> 
+    <%  }) %>
+  </div>
+</div>
+
            
-           
-            </tbody>
-            </table>
-            </div>
-            </div>
             
 
 

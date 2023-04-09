@@ -110,11 +110,11 @@ formFileMultiple.addEventListener("change", function() {
     button.addEventListener('click', async function() {
       const imgName = this.dataset.img;
       const res = await fetch(`/deleteImage/${imgName}`, { method: 'DELETE' });
-      if (res.ok) {
-        // const imgContainer = this.parentNode;
-        // imgContainer.remove();
-        button.parentElement.remove();
-      }
+
+      let respond = await res.json();
+    if (respond.success) { // Check for success property in the response
+      button.parentElement.remove();
+    }
     });
   });
 

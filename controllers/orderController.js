@@ -2,10 +2,10 @@ const User = require("../model/userSchema");
 const Product = require("../model/productSchema");
 const Order = require("../model/orderSchema");
 
-const userOrdersLoad = async (req, res,next) => {
+const userOrdersLoad = async (req, res, next) => {
   try {
-    const orderData = await Order.find({ userId: req.session.userData._id }).sort({ _id: -1 })
-    res.render('users/myOrderPage', { order: orderData, userData: req.session.userData._id })
+    const orderData = await Order.find({ userId: req.session.userData._id }).sort({ _id: -1 });
+    res.render('users/myOrderPage', { order: orderData, userData: req.session.userData });
   }
   catch (error) {
     next(error);
@@ -13,17 +13,19 @@ const userOrdersLoad = async (req, res,next) => {
   }
 }
 
-const singleOrderLoad = async (req, res,next) => {
+const singleOrderLoad = async (req, res, next) => {
   try {
     const orderData = await Order.find({ orderId: req.query.id }).lean();
-    res.render('users/singleOrder', { order: orderData, userData: req.session.userData.name })
+    const productData = await Product.find();
+
+    res.render('users/singleOrder', { order: orderData, userData: req.session.userData, products: productData })
   }
   catch (error) {
     next(error);
   }
 }
 
-const cancelOrderLoad = async (req, res,next) => {
+const cancelOrderLoad = async (req, res, next) => {
   try {
 
     const id = req.query.id;
@@ -36,7 +38,7 @@ const cancelOrderLoad = async (req, res,next) => {
         }
       })
     })
-    
+
     await User.updateOne(
       { _id: req.session.userData._id },
       { $inc: { wallet: orderData.total } }
@@ -74,12 +76,12 @@ const cancelOrderLoad = async (req, res,next) => {
     }
     res.redirect('/myOrders');
   } catch (error) {
-     next(error);
+    next(error);
   }
 }
 
 
-module.exports={
+module.exports = {
   userOrdersLoad,
   singleOrderLoad,
   cancelOrderLoad

@@ -3,6 +3,8 @@ dotenv.config();
 const { ObjectId } = require('mongodb');
 
 const Order = require('../model/orderSchema');
+const Product = require('../model/productSchema');
+
 
 
 const orderLoad = async (req, res,next) => {
@@ -19,7 +21,8 @@ const viewProductLoad = async (req, res,next) => {
   try {
 
     const orderData = await Order.find({ _id: ObjectId(req.query.id) });
-    res.render('admin/productView', { order: orderData });
+    const productData = await Product.find();
+    res.render('admin/productView', { order: orderData , products : productData});
 
   }
   catch (error) {
