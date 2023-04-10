@@ -192,7 +192,7 @@ const coupon = async (req, res, next) => {
     const couponData = await Coupon.findOne({ code: codeId }).lean();
     const userData = await Coupon.findOne({ code: codeId, userId: req.session.userData._id }).lean()
 
-    if (couponData && couponData.date > moment().format("YYYY-MM-DD")) {
+    if (couponData && couponData.date > moment().format("YYYY-MM-DD" ) && couponData.status) {
       offerPrice = couponData.offer
 
 

@@ -47,6 +47,7 @@ admin_route.post('/productEdit',adminAuth.isLogin, Upload.array('image'), produc
 admin_route.get('/coupon', adminAuth.isLogin, adminController.couponLoad);
 admin_route.get('/addCoupon', adminAuth.isLogin, adminController.addCouponLoad);
 admin_route.post('/addCoupon',adminAuth.isLogin, adminController.newCouponUpdate);
+admin_route.post('/admin/deactivatecoupon',adminAuth.isLogin, adminController.blockCoupon);
 
 //orders
 

@@ -25,7 +25,14 @@
                       <td><%= coupons[i].code %></td>
                       <td><%= coupons[i].date %></td>
                       <td><%= coupons[i].offer %></td>
-                      <td><%= coupons[i].status %></td>
+                      <td data-title="Actions">                          
+                        <%if(coupons[i].status === true){%>
+                            <button type="button" class="btn btn-danger" onclick="active('<%= coupons[i]._id %>' )">Deactivate</button>
+                          <%}else{%>
+                            <button type="button" class="btn btn-success" onclick="active('<%= coupons[i]._id %>')">Activate</button>
+                          <%}                                                     
+                        %>
+                      </td>
                      </tr>
                   <% } %>
   
@@ -47,7 +54,23 @@
 </div>
 <!-- Table End -->
 
-
+<script>
+     function active(data) {
+          fetch("/admin/deactivatecoupon", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                    id: data
+              })
+          })
+           .then((res) => res.json())
+          
+           .then((res) => window.location.reload())
+           .catch(error => console.error(error))
+      }
+</script>
 
 
 

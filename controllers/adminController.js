@@ -167,6 +167,35 @@ const newCouponUpdate = async (req, res,next) => {
   }
 }
 
+const blockCoupon = async(req,res,next)=>{
+  try{
+    const couponId = req.body.id;
+    const isActiveCoupon = await Coupon.findById(couponId);
+    if(isActiveCoupon.status){
+      const coupon = await Coupon.findByIdAndUpdate(
+        {_id:couponId},
+        {$set:{status:false}}
+      )
+      if(coupon){
+        res.json('success');
+      }
+    }
+    else{
+      const coupon = await Coupon.findByIdAndUpdate(
+        {_id:couponId},
+        {$set:{status:true}}
+      )
+      if(coupon){
+        res.json('success');
+      }
+    }
+  }
+  catch(error){
+    next(error);
+  }
+}
+
+
 module.exports = {
   loginLoad,
   verifyLogin,
@@ -177,5 +206,6 @@ module.exports = {
   userUnBlock,
   couponLoad,
   addCouponLoad,
-  newCouponUpdate
+  newCouponUpdate,
+  blockCoupon
 }

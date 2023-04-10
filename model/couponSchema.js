@@ -3,26 +3,26 @@ const mongoose = require('mongoose');
 const { ObjectId } = require('mongodb');
 
 
-  const couponSchema = new mongoose.Schema({
+const couponSchema = new mongoose.Schema({
 
-    code:{
-        type:String,
-        required:true
+    code: {
+        type: String,
+        required: true
     },
-    date:{
-        type:String,
-        required:true
+    date: {
+        type: String,
+        required: true
     },
-    offer:{
-        type:Number,
-        required:true
+    offer: {
+        type: Number,
+        required: true
     },
-    status:{
-        type:String,
-        default:"Active"  
+    status: {
+        type: Boolean,
+        default: true
     },
-    userId:[{
-        type:ObjectId
+    userId: [{
+        type: ObjectId
     }]
 })
-module.exports = mongoose.model("Coupon",couponSchema);
+module.exports = mongoose.model("Coupon", couponSchema);
