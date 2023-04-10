@@ -8,6 +8,7 @@ const moment = require('moment');
 const quantitys = [];
 const checkOut = async (req, res,next) => {
   try {
+    
     const address = await User.find({ _id: req.session.userData._id }).lean();
     const cartData = await User.aggregate([{
       $match: { _id: ObjectId(req.session.userData._id) }
@@ -26,11 +27,13 @@ const checkOut = async (req, res,next) => {
       subtotal = subtotal + cartProduct.price * req.body.quantity[i];
       quantitys[i] = req.body.quantity[i];
     });
+    
+    
     res.render("users/checkout", {
       productDetails: cartData[0].Cartproducts,
       subtotal: subtotal,
       address: address[0].address,
-      userData: req.session.userData._id,
+      userData: req.session.userData,
       logged: 1, total: subtotal, offer: 0
     });
   } catch (error) {
@@ -210,6 +213,40 @@ const coupon = async (req, res, next) => {
   }
 }
 
+const removeCouponcode = async (req, res, next) => {
+  try {
+    // Retrieve coupon data for the currently applied coupon
+    console.log("you are hereeeeeeeeeeeeeeeeeeeeeeeeeeeanjuuuuuuuuuuuuu");
+    const codeId = req.body.code;
+    console.log("code id isssss", codeId);
+    const couponData = await Coupon.findOne({ code: codeId }).lean();
+    const userData = await Coupon.findOne({
+      code: codeId,
+      userId: req.session.userData._id,
+    }).lean();
+    console.log("coupon dataa issssss", couponData);
+    if (couponData) {
+      // Remove coupon from user's coupon list
+      const updateData = await Coupon.updateOne(
+        { code: codeId },
+        { $pull: { userId: req.session.userData._id } }
+      );
+        console.log(updateData);
+      // Set gtotal to be the same as total, since the coupon has been removed
+      const total = req.body.total;
+      const gtotal = total;
+        console.log("total issssssssss",gtotal);
+      res.json({ success: true, gtotal: gtotal });
+    } else {
+      // Handle error scenario
+      res.json({ success: false });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 const removeAddress = async (req, res,next) => {
   try {
     const id = req.body.addressId;
@@ -298,6 +335,7 @@ module.exports={
   editAddressUpload,
   razorPayFunction,
   razorPayVerify,
-  checkOutLoad 
+  checkOutLoad,
+  removeCouponcode
 
 }

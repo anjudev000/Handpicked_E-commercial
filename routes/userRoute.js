@@ -69,6 +69,7 @@ user_route.post('/removeaddress-checkoutpage',auth.isLogin,checkoutController.re
 user_route.post('/place-order',auth.isLogin, checkoutController.placeOrder);
 user_route.get('/success', auth.isLogin,checkoutController.successorder);
 user_route.post('/validateCoupon',auth.isLogin, checkoutController.coupon);
+user_route.post('/removeCoupon',auth.isLogin, checkoutController.removeCouponcode);
 user_route.post('/create/orderId',auth.isLogin,checkoutController.razorPayFunction);// RAZORPAY
 user_route.post("/api/payment/verify",auth.isLogin,checkoutController.razorPayVerify);
 

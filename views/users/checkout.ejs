@@ -211,11 +211,13 @@ tfoot td {
                                         <div class="coupon-area">
                                         <div class="check_title"></div>
                                         <input type="text" name="coupon" id="couponcode" class="coupon-input" placeholder="Enter coupon code" />
-                                        <button class="btn bg-success apply-coupon" onclick="checkCoupon()" href="">Apply Coupon</button>
+                                        <button class="btn bg-success apply-coupon" onclick="checkCoupon();" href="">Apply Coupon</button>
+                                        
 
                                         <span id="errorMessage" class="coupon-error"></span>
 
                                       </div>
+                                      
                                     </div>
                                   </div>
                                   
@@ -557,9 +559,9 @@ tfoot td {
 
 
       async function checkCoupon() {
+        
         const coupon = document.getElementById("couponcode").value;
         const total = document.getElementById("subtotal").value;
-        console.log(coupon);
         let valCoupon = await fetch("/validateCoupon", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -570,6 +572,7 @@ tfoot td {
         if (response == "fail") {
           document.getElementById("errorMessage").innerHTML = "Coupon Invalid";
         } else {
+          alert("Coupon applied successfully!");
           Rtotal = response.gtotal;
           let offer = (document.getElementById("offer").innerHTML = Number(
             response.offerPrice
@@ -587,15 +590,42 @@ tfoot td {
 
           document.getElementById("gtotal").innerHTML = gtotal;
         }
-      }
+        var button = document.querySelector('.apply-coupon');
+        button.innerText = 'Remove Coupon';
+         button.setAttribute('onclick', 'removeCoupon()');
+       
+        }
 
-      function removeCoupon(){
-         // Remove the coupon code from the applied coupon field
-  document.getElementById("offer").value = "";
-  
-  // Update the display to show the coupon has been removed
-  alert("Coupon removed successfully!");
-      }
+        // Add the "removeCoupon" function
+       async function removeCoupon() {
+       try {
+        const coupon = document.getElementById("couponcode").value;
+        const total = document.getElementById("subtotal").value;
+      const response = await fetch("/removeCoupon", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({code: coupon, total: total}),
+    });
+    const result = await response.json();
+    if (result.success) {
+      alert("Coupon removed successfully!");
+      // Reset relevant DOM elements or update UI as needed
+      document.getElementById("offer").innerHTML = ""; // Clear offer element
+      document.getElementById("gtotal").innerHTML = result.gtotal; // Update gtotal with new value
+      document.getElementById("errorMessage").innerHTML = ""; // Clear error message element
+      // Update the "Remove Coupon" button to "Apply Coupon" and set the onclick attribute to "checkCoupon()"
+      var button = document.querySelector('.apply-coupon');
+      button.innerText = 'Apply Coupon';
+      button.setAttribute('onclick', 'checkCoupon()');
+    } else {
+      // Handle error scenario
+      alert("Failed to remove coupon anjuuuuuuu");
+    }
+  } catch (error) {
+    // Handle fetch error 
+    alert("Failed to remove coupon");
+  }
+}
 
 
 
@@ -657,6 +687,8 @@ tfoot td {
         }
       })
     }
+
+    
     </script>
   </body>
 </html>
