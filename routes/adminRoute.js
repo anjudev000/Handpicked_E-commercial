@@ -2,10 +2,10 @@ const express = require('express');
 const admin_route = express.Router();
 
 const adminController = require("../controllers/adminController");
-const categoryController = require("../controllers/a_categoryController");
-const productController = require("../controllers/a_productController");
-const orderController = require("../controllers/a_orderController");
-const chartController = require("../controllers/a_chartController");
+const categoryController = require("../controllers/adcategoryController");
+const productController = require("../controllers/adproductController");
+const orderController = require("../controllers/adorderController");
+const chartController = require("../controllers/adchartController");
 const config = require('../config/config');
 const Upload = require('../helper/multer');
 
