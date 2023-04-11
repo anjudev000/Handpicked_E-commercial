@@ -1,4 +1,6 @@
 <%- include('../layouts/admin/adminheader.ejs') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.1.5/dist/sweetalert2.min.css">
 
 <div class="col-sm-12 col-xl-6">
   <div class="bg-light rounded h-100 p-4">
@@ -46,7 +48,7 @@
         <%if(product.images.length>0)  {%>
         <% for (let i = 0; i < product.images.length; i++) { %>
           <div class="position-relative me-3 mb-3">
-        <img src="/images/<%=product.images[i]%>"  width="100px" height="auto" id="imgView">
+        <img src="/images/<%=product.images[i]%>" class="image"  width="100px" height="auto" id="imgView">
         <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 delete-img" data-img="<%= product.images[i] %>">
           <i class="bi bi-trash"></i>
         </button></div>
@@ -109,12 +111,23 @@ formFileMultiple.addEventListener("change", function() {
   deleteButtons.forEach(button => {
     button.addEventListener('click', async function() {
       const imgName = this.dataset.img;
+      const images = document.querySelectorAll('.image');
+       // Check if there's at least one image remaining
+       if(images.length > 1){
       const res = await fetch(`/deleteImage/${imgName}`, { method: 'DELETE' });
 
       let respond = await res.json();
     if (respond.success) { // Check for success property in the response
       button.parentElement.remove();
     }
+  }else{
+    Swal.fire({
+        title: "Error",
+        text: "At least one image must remain.",
+        icon: "error",
+        confirmButtonText: "OK"
+      });
+  }
     });
   });
 
