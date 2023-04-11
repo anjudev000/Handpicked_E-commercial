@@ -4,6 +4,8 @@ const Order = require("../model/orderSchema");
 const Coupon = require("../model/couponSchema");
 const { ObjectId } = require('mongodb');
 const moment = require('moment');
+const razorPay = require('razorpay');
+const instance = new razorPay({ key_id: process.env.KEY_ID, key_secret: process.env.KEY_SECRET });
 
 const quantitys = [];
 const checkOut = async (req, res,next) => {
@@ -42,7 +44,6 @@ const checkOut = async (req, res,next) => {
 
 }
 
-
 const checkOutLoad = async (req, res) => {
   try {
     const address = await User.find({ _id: req.session.userData._id }).lean();
@@ -79,7 +80,7 @@ const checkOutLoad = async (req, res) => {
       offer: 0,
     });
   } catch (error) {
-    console.log(error);
+    
   }
 };
 
@@ -173,8 +174,9 @@ const successorder = async (req, res,next) => {
     
     if (req.session.page) {
       delete req.session.page
+      
       const orderData = await Order.find({}).sort({ _id: -1 }).limit(1)
-      res.render('users/successOrder', { order: orderData, userData: req.session.userData._id })
+      res.render('users/successOrder', { order: orderData, userData: req.session.userData })
     } else {
       res.redirect('/')
     }
@@ -191,6 +193,10 @@ const coupon = async (req, res, next) => {
     const total = req.body.total
     const couponData = await Coupon.findOne({ code: codeId }).lean();
     const userData = await Coupon.findOne({ code: codeId, userId: req.session.userData._id }).lean()
+       
+    let minamount=100;
+    let maxamount=500;
+    let amount;
 
     if (couponData && couponData.date > moment().format("YYYY-MM-DD" ) && couponData.status) {
       offerPrice = couponData.offer
@@ -199,9 +205,22 @@ const coupon = async (req, res, next) => {
       if (userData) {
         res.json("fail")
       } else {
-        const amount = total * offerPrice / 100
-        const gtotal = total - amount
-        res.json({ offerPrice: offerPrice, gtotal: gtotal })
+        if(total>=minamount){
+
+          if(total<=maxamount){
+            amount = (total * offerPrice) / 100;
+          var gtotal = total - amount;
+           
+        }else{
+            amount = (1000 * offerPrice) / 100;
+            var gtotal = total - amount;
+          
+           }
+        }else{
+           gtotal=amount;
+           res.json("alert");
+          }
+      res.json({ offerPrice: offerPrice, gtotal: gtotal })
         const userupdate = await Coupon.updateOne({ code: codeId }, { $push: { userId: req.session.userData._id } })
       }
     } else {
@@ -216,26 +235,23 @@ const coupon = async (req, res, next) => {
 const removeCouponcode = async (req, res, next) => {
   try {
     // Retrieve coupon data for the currently applied coupon
-    console.log("you are hereeeeeeeeeeeeeeeeeeeeeeeeeeeanjuuuuuuuuuuuuu");
     const codeId = req.body.code;
-    console.log("code id isssss", codeId);
     const couponData = await Coupon.findOne({ code: codeId }).lean();
     const userData = await Coupon.findOne({
       code: codeId,
       userId: req.session.userData._id,
     }).lean();
-    console.log("coupon dataa issssss", couponData);
+    
     if (couponData) {
       // Remove coupon from user's coupon list
       const updateData = await Coupon.updateOne(
         { code: codeId },
         { $pull: { userId: req.session.userData._id } }
       );
-        console.log(updateData);
+        
       // Set gtotal to be the same as total, since the coupon has been removed
       const total = req.body.total;
       const gtotal = total;
-        console.log("total issssssssss",gtotal);
       res.json({ success: true, gtotal: gtotal });
     } else {
       // Handle error scenario

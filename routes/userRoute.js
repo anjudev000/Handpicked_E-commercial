@@ -4,7 +4,6 @@ const session = require('express-session');
 const user_route = express.Router();
 const auth = require("../middleware/auth");
 const razorPay = require('razorpay');
-const instance = new razorPay({ key_id: process.env.KEY_ID, key_secret: process.env.KEY_SECRET });
 
 user_route.use(session({ secret: process.env.SESSIONSECRET, resave: true, saveUninitialized: true }));
 
