@@ -5,6 +5,7 @@ const fs = require("fs")
 const Category = require('../model/categorySchema');
 const Product = require('../model/productSchema');
 const path = require('path');
+const sharp = require('sharp');
 
 
 
@@ -68,6 +69,23 @@ const productUpload = async (req, res, next) => {
         images: images,
         is_deleted: false,
       });
+       // Perform image cropping
+       const croppedImages = await Promise.all(
+        
+        images.map(async (image) => {
+          const imagePath = path.join("public", "images", image);
+          console.log(imagePath,"yessssssssssss");
+          // Perform image cropping using sharp library
+          const croppedImage = await sharp(imagePath)
+            .resize(1001,801) // Set desired width/height for cropped image
+            .toBuffer(); // Convert to buffer
+          console.log("here alsoo",croppedImage)
+          // Write the cropped image back to the file system
+          fs.writeFileSync(imagePath, croppedImage);
+
+          return image;
+        })
+      );
 
       await productData.save();
       req.session.messager = "";

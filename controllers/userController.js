@@ -377,7 +377,7 @@ const addadressUpload = async (req, res,next) => {
 
 const addressLoadcheck = async (req, res,next) => {
   try {
-    res.render('users/add-address2', { userData: req.session.userData._id });
+    res.render('users/add-address2', { userData: req.session.userData });
   }
   catch (error) {
     next(error);
