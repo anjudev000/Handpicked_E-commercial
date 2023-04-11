@@ -424,7 +424,7 @@ const editAddressUpdate = async (req, res,next) => {
 const deleteAdress = async (req, res,next) => {
   try {
     const id = req.query.id;
-    const userData = await User.findByIdAndUpdate({ _id: req.session.userData._id }, { $pull: { address: { _id: id } } });
+    const userData = await User.findByIdAndUpdate({ _id: req.session.userData }, { $pull: { address: { _id: id } } });
     res.redirect('/user-profile');
   }
   catch (error) {
