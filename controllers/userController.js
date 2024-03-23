@@ -22,6 +22,7 @@ function generateOTP() {
   for (let i = 0; i < 6; i++) {
     otp += Math.floor(Math.random() * 10);
   }
+  console.log('otp is:',otp);
   return otp;
 }
 const sendVerifyMail = async (email,next) => {
@@ -91,6 +92,7 @@ const sendResetLink = async (name, email, token,next) => {
 
 const homeLoad = async (req, res,next) => {
   try {
+    console.log("helloooo");
     const productData = await Product.find({ is_deleted: false });
     if (req.session.user) {
       const userData = req.session.userData;

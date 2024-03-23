@@ -3,8 +3,6 @@ dotenv.config();
 
 const Category = require('../model/categorySchema');
 
-
-
 const categoryLoad = async (req,res,next) => {
   try {
     const categoryData = await Category.find({});
@@ -80,8 +78,6 @@ const editCategoryUpload = async (req, res,next) => {
     next(error);
   }
 }
-
-
 
 const deleteCategoryLoad = async (req, res,next) => {
   try {
